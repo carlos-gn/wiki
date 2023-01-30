@@ -3,7 +3,7 @@
     nav-header(v-if='!printView')
     v-navigation-drawer(
       v-if='navMode !== `NONE` && !printView'
-      :class='$vuetify.theme.dark ? `grey darken-4-d4` : `primary`'
+      :class='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`'
       dark
       app
       clipped
@@ -13,7 +13,7 @@
       :right='$vuetify.rtl'
       )
       vue-scroll(:ops='scrollStyle')
-        nav-sidebar(:color='$vuetify.theme.dark ? `grey darken-4-d4` : `primary`', :items='sidebarDecoded', :nav-mode='navMode')
+        nav-sidebar(:color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`', :items='sidebarDecoded', :nav-mode='navMode')
 
     v-fab-transition(v-if='navMode !== `NONE`')
       v-btn(
@@ -346,7 +346,8 @@
         small
         :depressed='this.$vuetify.breakpoint.mdAndUp'
         @click='$vuetify.goTo(0, scrollOpts)'
-        color='primary'
+        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`'
+        :class='$vuetify.theme.dark ? `white--text` : `black--text`'
         dark
         :style='upBtnPosition'
         :aria-label='$t(`common:actions.returnToTop`)'

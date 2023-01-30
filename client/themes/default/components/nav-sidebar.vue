@@ -1,33 +1,36 @@
 <template lang="pug">
   div
-    .pa-3.d-flex(v-if='navMode === `MIXED`', :class='$vuetify.theme.dark ? `grey darken-5` : `blue darken-3`')
+    .pa-3.d-flex(v-if='navMode === `MIXED`', :class='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`')
       v-btn(
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4` : `blue darken-2`'
+        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`'
         style='min-width:0;'
         @click='goHome'
         :aria-label='$t(`common:header.home`)'
+        :class='$vuetify.theme.dark ? `white--text` : `black--text`'
         )
         v-icon(size='20') mdi-home
       v-btn.ml-3(
         v-if='currentMode === `custom`'
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4` : `blue darken-2`'
+        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`'
         style='flex: 1 1 100%;'
         @click='switchMode(`browse`)'
+        :class='$vuetify.theme.dark ? `white--text` : `black--text`'
         )
         v-icon(left) mdi-file-tree
         .body-2.text-none {{$t('common:sidebar.browse')}}
       v-btn.ml-3(
         v-else-if='currentMode === `browse`'
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4` : `blue darken-2`'
+        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`'
         style='flex: 1 1 100%;'
         @click='switchMode(`custom`)'
+        :class='$vuetify.theme.dark ? `white--text` : `black--text`'
         )
         v-icon(left) mdi-navigation
         .body-2.text-none {{$t('common:sidebar.mainMenu')}}
-    v-divider
+    v-divider(:class='$vuetify.theme.dark ? `` : `border-color: white`')
     //-> Custom Navigation
     v-list.py-2(v-if='currentMode === `custom`', dense, :class='color', :dark='dark')
       template(v-for='item of items')
@@ -36,35 +39,36 @@
           :href='item.t'
           :target='item.y === `externalblank` ? `_blank` : `_self`'
           :rel='item.y === `externalblank` ? `noopener` : ``'
+          class='navigation-list-item'
           )
           v-list-item-avatar(size='24', tile)
-            v-icon(v-if='item.c.match(/fa[a-z] fa-/)', size='19') {{ item.c }}
-            v-icon(v-else) {{ item.c }}
-          v-list-item-title {{ item.l }}
-        v-divider.my-2(v-else-if='item.k === `divider`')
+            v-icon(v-if='item.c.match(/fa[a-z] fa-/)', size='19' :class='$vuetify.theme.dark ? `white--text` : `black--text`') {{ item.c }}
+            v-icon(v-else, :class='$vuetify.theme.dark ? `white--text` : `black--text`') {{ item.c }}
+          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`') {{ item.l }}
+        v-divider.my-2(v-else-if='item.k === `divider`', :class='$vuetify.theme.dark ? `` : `border-color: white`')
         v-subheader.pl-4(v-else-if='item.k === `header`') {{ item.l }}
     //-> Browse
     v-list.py-2(v-else-if='currentMode === `browse`', dense, :class='color', :dark='dark')
       template(v-if='currentParent.id > 0')
-        v-list-item(v-for='(item, idx) of parents', :key='`parent-` + item.id', @click='fetchBrowseItems(item)', style='min-height: 30px;')
+        v-list-item(v-for='(item, idx) of parents', :key='`parent-` + item.id', @click='fetchBrowseItems(item)', style='min-height: 30px;' class='navigation-list-item')
           v-list-item-avatar(size='18', :style='`padding-left: ` + (idx * 8) + `px; width: auto; margin: 0 5px 0 0;`')
-            v-icon(small) mdi-folder-open
-          v-list-item-title {{ item.title }}
-        v-divider.mt-2
+            v-icon(small  :class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-folder-open
+          v-list-item-title( :class='$vuetify.theme.dark ? `white--text` : `black--text`') {{ item.title }}
+        v-divider.mt-2(:class='$vuetify.theme.dark ? `` : `border-color: white`')
         v-list-item.mt-2(v-if='currentParent.pageId > 0', :href='`/` + currentParent.locale + `/` + currentParent.path', :key='`directorypage-` + currentParent.id', :input-value='path === currentParent.path')
           v-list-item-avatar(size='24')
-            v-icon mdi-text-box
-          v-list-item-title {{ currentParent.title }}
-        v-subheader.pl-4 {{$t('common:sidebar.currentDirectory')}}
+            v-icon(:class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-text-box
+          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`') {{ currentParent.title }}
+        v-subheader.pl-4( :class='$vuetify.theme.dark ? `white--text` : `black--text`') {{$t('common:sidebar.currentDirectory')}}
       template(v-for='item of currentItems')
-        v-list-item(v-if='item.isFolder', :key='`childfolder-` + item.id', @click='fetchBrowseItems(item)')
+        v-list-item(v-if='item.isFolder', :key='`childfolder-` + item.id', @click='fetchBrowseItems(item)' class='navigation-list-item')
           v-list-item-avatar(size='24')
-            v-icon mdi-folder
-          v-list-item-title {{ item.title }}
-        v-list-item(v-else, :href='`/` + item.locale + `/` + item.path', :key='`childpage-` + item.id', :input-value='path === item.path')
+            v-icon(:class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-folder
+          v-list-item-title( :class='$vuetify.theme.dark ? `white--text` : `black--text`') {{ item.title }}
+        v-list-item(v-else, :href='`/` + item.locale + `/` + item.path', :key='`childpage-` + item.id', :input-value='path === item.path' class='navigation-list-item')
           v-list-item-avatar(size='24')
-            v-icon mdi-text-box
-          v-list-item-title {{ item.title }}
+            v-icon( :class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-text-box
+          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`') {{ item.title }}
 </template>
 
 <script>
