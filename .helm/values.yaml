@@ -8,7 +8,7 @@ revisionHistoryLimit: 10
 image:
   repository: 221581667315.dkr.ecr.eu-west-1.amazonaws.com/wiki
   imagePullPolicy: IfNotPresent
-  tag: 97f1da0f51633c971b4b7d0ff141668c31aeb2c1
+  tag: dummy
 
 imagePullSecrets: []
 nameOverride: ""
@@ -121,7 +121,7 @@ sideload:
 externalPostgresql:
   # note: ?sslmode=require => ?ssl=true
   # databaseURL: postgresql://postgres:postgres@postgres:5432/wiki?ssl=true
-  databaseURL: postgresql://wikijs_adm:t8w7b6AoLDhiNXo4@dev-db.deel.technology:5432/wikijs
+  databaseURL: dummy
 #   # For self signed CAs, like DigitalOcean
 #   NODE_TLS_REJECT_UNAUTHORIZED: "0"
 
