@@ -1,9 +1,9 @@
 <template lang="pug">
   div
-    .pa-3.d-flex(v-if='navMode === `MIXED`', :class='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`')
+    .pa-3.d-flex(v-if='navMode === `MIXED`', :class='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-3`')
       v-btn(
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`'
+        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-3`'
         style='min-width:0;'
         @click='goHome'
         :aria-label='$t(`common:header.home`)'
@@ -13,7 +13,7 @@
       v-btn.ml-3(
         v-if='currentMode === `custom`'
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`'
+        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-3`'
         style='flex: 1 1 100%;'
         @click='switchMode(`browse`)'
         :class='$vuetify.theme.dark ? `white--text` : `black--text`'
@@ -23,7 +23,7 @@
       v-btn.ml-3(
         v-else-if='currentMode === `browse`'
         depressed
-        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-4`'
+        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-3`'
         style='flex: 1 1 100%;'
         @click='switchMode(`custom`)'
         :class='$vuetify.theme.dark ? `white--text` : `black--text`'
