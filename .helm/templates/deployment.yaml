@@ -1,69 +1,79 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{$.Values.deployment.name}}
+  name: {{ include "wiki.fullname" . }}
   labels:
-    app: {{$.Values.deployment.name}}
+    {{- include "wiki.labels" . | nindent 4 }}
 spec:
-  replicas: {{$.Values.deployment.replicas}}
-  progressDeadlineSeconds: {{$.Values.deployment.progressDeadlineSeconds}}
-  revisionHistoryLimit: {{$.Values.deployment.revisionHistoryLimit}}
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: {{$.Values.deployment.rollingUpdate.maxUnavailable}}
-      maxSurge: {{$.Values.deployment.rollingUpdate.maxSurge}}
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
-      app: {{$.Values.deployment.name}}
+      {{- include "wiki.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{$.Values.deployment.name}}
-        version: {{$.Values.deployment.version}}
+        {{- include "wiki.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: {{$.Values.serviceAccount}}
-      nodeSelector:
-        eks.amazonaws.com/nodegroup: {{$.Values.nodeSelector}}
-      containers:
-        # - name: nginx
-        #   image: public.ecr.aws/nginx/nginx:1.21-alpine
-        #   ports:
-        #     - containerPort: 80
-        #   resources:
-        #     requests:
-        #       memory: {{$.Values.deployment.resources.requests.memory}}
-        #       cpu: {{$.Values.deployment.resources.requests.cpu}}
-        #     limits:
-        #       memory: {{$.Values.deployment.resources.limits.memory}}
-        #       cpu: {{$.Values.deployment.resources.limits.cpu}}
-        #   volumeMounts:
-        #     - name: nginx-conf
-        #       mountPath: /etc/nginx/nginx.conf
-        #       subPath: nginx.conf
-        #     - mountPath: /var/html
-        #       name: html
-        #       readOnly: true
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "wiki.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.sideload.enabled }}
       initContainers:
-        - name: secret-injector
-          image: '221581667315.dkr.ecr.eu-west-1.amazonaws.com/secret-injector:latest'
+        - name: {{ .Chart.Name }}-sideload
+          image: "{{ .Values.image.repository }}:{{ default "latest" .Values.image.tag }}"
+          imagePullPolicy: {{ default "IfNotPresent" .Values.image.imagePullPolicy }}
           env:
-            - name: SECRET_ARN
-              value: {{$.Values.deployment.secret}}
-            - name: FEATURES_TOKEN
-              value: {{$.Values.deployment.features}}
-            - name: STAGE
-              value: {{$.Values.deployment.env.STAGE}}
+            {{- toYaml .Values.sideload.env | nindent 12 }}
+          command: [ "sh", "-c" ]
+          args: [ "mkdir -p /wiki/data/sideload && git clone --depth=1 {{ .Values.sideload.repoURL }} /wiki/data/sideload/" ]
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ default "latest" .Values.image.tag }}"
+          imagePullPolicy: {{ default "IfNotPresent" .Values.image.imagePullPolicy }}
+          env:
+            - name: DB_TYPE
+              value: postgres
+            - name: DATABASE_URL
+              value: {{ .Values.externalPostgresql.databaseURL }}
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: {{ default "1" .Values.externalPostgresql.NODE_TLS_REJECT_UNAUTHORIZED | quote }}
+            - name: HA_ACTIVE
+              value: {{ .Values.replicaCount | int | le 2 | quote }}
+    {{- with .Values.volumeMounts }}
           volumeMounts:
-            - name: secrets
-              mountPath: '/secrets'
-            - name: features
-              mountPath: '/features'
-
+            {{- toYaml . | nindent 12 }}
+    {{- end }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          startupProbe:
+            {{- toYaml .Values.startupProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: development
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.volumes }}
       volumes:
-        - name: html
-          emptyDir:
-            medium: Memory
-        - name: nginx-conf
-          configMap:
-            name: {{$.Values.deployment.name}}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
