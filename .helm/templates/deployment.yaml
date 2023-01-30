@@ -22,8 +22,40 @@ spec:
       serviceAccountName: {{ include "wiki.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if .Values.sideload.enabled }}
       initContainers:
+        - name: secret-injector
+          image: '221581667315.dkr.ecr.eu-west-1.amazonaws.com/secret-injector:latest'
+          env:
+            - name: SECRET_ARN
+              value: {{$.Values.deployment.secret}}
+            - name: FEATURES_TOKEN
+              value: {{$.Values.deployment.features}}
+            - name: STAGE
+              value: {{$.Values.deployment.env.STAGE}}
+          volumeMounts:
+            - name: secrets
+              mountPath: '/secrets'
+            - name: features
+              mountPath: '/features'
+        - name: nc
+          image: public.ecr.aws/runecast/busybox:1.33.1
+          command:
+            - sh
+          args:
+            - -c
+            - |
+              if [[ -z $DATABASE_URL ]]; then
+                echo "Using RDS database"
+              else
+                for i in {1..100}; do nc -z postgres 5432 && break || sleep 3; done
+              fi
+              echo all dependencies are up
+          env:
+          {{- range $key, $value := $.Values.deployment.env}}
+            - name: {{ $key }}
+              value: {{ $value }}
+          {{- end}}
+      {{- if .Values.sideload.enabled }}
         - name: {{ .Chart.Name }}-sideload
           image: "{{ .Values.image.repository }}:{{ default "latest" .Values.image.tag }}"
           imagePullPolicy: {{ default "IfNotPresent" .Values.image.imagePullPolicy }}
@@ -75,5 +107,10 @@ spec:
     {{- end }}
     {{- with .Values.volumes }}
       volumes:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
+        - name: secrets
+          emptyDir:
+            medium: Memory
+        - name: features
+          emptyDir:
+            medium: Memory
+
