@@ -20,3 +20,4 @@ data:
       deployment.secret: arn:aws:secretsmanager:eu-west-1:221581667315:secret:/wiki/dev-Pgb1Q5
       ingress.hostname: wiki.deel.training
       deployment.env.INGRESS: wiki.deel.training
+      externalPostgresql.databaseURL: $DATABASE_URL
