@@ -116,7 +116,7 @@
                   v-list-item(@click='changeLocale(lc)')
                     v-list-item-action(style='min-width:auto;'): v-chip(:color='lc.code === locale ? `blue` : `grey`', small, label, dark) {{lc.code.toUpperCase()}}
                     v-list-item-title {{lc.name}}
-            v-divider(vertical)
+            v-divider(v-if='isAuthenticated', vertical)
 
           //- PAGE ACTIONS
 
