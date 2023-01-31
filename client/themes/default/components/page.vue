@@ -242,6 +242,7 @@
                     v-btn.btn-animate-edit(
                       fab
                       color='primary'
+                      class="white--text"
                       v-model='pageEditFab'
                       @click='pageEdit'
                       v-on='onEditActivator'
