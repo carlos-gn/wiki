@@ -73,8 +73,8 @@ spec:
           env:
             - name: DB_TYPE
               value: postgres
-            # - name: DATABASE_URL
-            #   value: {{ .Values.externalPostgresql.databaseURL }}
+            - name: DATABASE_URL
+              value: {{ .Values.externalPostgresql.databaseURL }}
             - name: NODE_TLS_REJECT_UNAUTHORIZED
               value: {{ default "1" .Values.externalPostgresql.NODE_TLS_REJECT_UNAUTHORIZED | quote }}
             - name: HA_ACTIVE
