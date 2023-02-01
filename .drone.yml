@@ -14,10 +14,17 @@ data:
     AWS_ACCESS_KEY_ID: AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: AWS_SECRET_ACCESS_KEY
     SONAR_TOKEN: SONAR_TOKEN
-    DATABASE_URL: WIKI_DEV_DATABASE_URL
+    DEV_DATABASE_URL: WIKI_DEV_DATABASE_URL
+    PROD_DATABASE_URL: WIKI_PROD_DATABASE_URL
   dev:
     values:
-      deployment.secret: arn:aws:secretsmanager:eu-west-1:221581667315:secret:/wiki/dev-Pgb1Q5
+      # deployment.secret: arn:aws:secretsmanager:eu-west-1:221581667315:secret:/wiki/dev-Pgb1Q5
       ingress.hostname: wiki.deel.training
       deployment.env.INGRESS: wiki.deel.training
-      externalPostgresql.databaseURL: $DATABASE_URL
+      externalPostgresql.databaseURL: $DEV_DATABASE_URL
+  prod:
+    values:
+      # deployment.secret: arn:aws:secretsmanager:eu-west-1:221581667315:secret:/wiki/prod-DPoZMs
+      ingress.hostname: wiki.deel.network
+      deployment.env.INGRESS: wiki.deel.network
+      externalPostgresql.databaseURL: $PROD_DATABASE_URL
