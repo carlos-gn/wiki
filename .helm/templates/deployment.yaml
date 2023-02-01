@@ -23,20 +23,6 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
-        - name: secret-injector
-          image: '221581667315.dkr.ecr.eu-west-1.amazonaws.com/secret-injector:latest'
-          env:
-            - name: SECRET_ARN
-              value: {{$.Values.deployment.secret}}
-            - name: FEATURES_TOKEN
-              value: {{$.Values.deployment.features}}
-            - name: STAGE
-              value: {{$.Values.deployment.env.STAGE}}
-          volumeMounts:
-            - name: secrets
-              mountPath: '/secrets'
-            - name: features
-              mountPath: '/features'
         - name: nc
           image: public.ecr.aws/runecast/busybox:1.33.1
           command:
@@ -57,7 +43,7 @@ spec:
           {{- end}}
       {{- if .Values.sideload.enabled }}
         - name: {{ .Chart.Name }}-sideload
-          image: "{{ .Values.image.repository }}:{{ default "latest" .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ default "latest" .Values.deployment.image.tag }}"
           imagePullPolicy: {{ default "IfNotPresent" .Values.image.imagePullPolicy }}
           env:
             {{- toYaml .Values.sideload.env | nindent 12 }}
@@ -68,7 +54,7 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ default "latest" .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}:{{ default "latest" .Values.deployment.image.tag }}"
           imagePullPolicy: {{ default "IfNotPresent" .Values.image.imagePullPolicy }}
           env:
             - name: DB_TYPE
@@ -105,11 +91,3 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      volumes:
-        - name: secrets
-          emptyDir:
-            medium: Memory
-        - name: features
-          emptyDir:
-            medium: Memory
-

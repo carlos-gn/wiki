@@ -8,7 +8,7 @@
           flat
           v-model='currentPageTitle'
           hide-details
-          background-color='black'
+          background-color='primary'
           dense
           full-width
         )

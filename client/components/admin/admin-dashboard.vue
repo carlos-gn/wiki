@@ -19,7 +19,7 @@
               easing='easeOutQuint'
               )
       v-flex(xs12 md6 lg4 xl3 d-flex)
-        v-card.blue.darken-3.dashboard-card.animated.fadeInUp.wait-p2s(dark)
+        v-card.primary.dashboard-card.animated.fadeInUp.wait-p2s(dark)
           v-card-text
             v-icon.dashboard-icon mdi-account
             .overline {{$t('admin:dashboard.users')}}
@@ -30,7 +30,7 @@
               easing='easeOutQuint'
               )
       v-flex(xs12 md6 lg4 xl3 d-flex)
-        v-card.blue.darken-4.dashboard-card.animated.fadeInUp.wait-p4s(dark)
+        v-card.primary.dashboard-card.animated.fadeInUp.wait-p4s(dark)
           v-card-text
             v-icon.dashboard-icon mdi-account-group
             .overline {{$t('admin:dashboard.groups')}}
@@ -42,11 +42,11 @@
               )
       v-flex(xs12 md6 lg12 xl3 d-flex)
         v-card.dashboard-card.animated.fadeInUp.wait-p6s(
-          :class='isLatestVersion ? "green" : "red lighten-2"'
+          :class='isLatestVersion ? "success" : "error lighten-1"'
           dark
           )
           v-btn.btn-animate-wrench(fab, absolute, :right='!$vuetify.rtl', :left='$vuetify.rtl', top, small, light, to='system', v-if='hasPermission(`manage:system`)')
-            v-icon(:color='isLatestVersion ? `green` : `red darken-4`', small) mdi-wrench
+            v-icon(:color='isLatestVersion ? `success` : `error`', small) mdi-wrench
           v-card-text
             v-icon.dashboard-icon mdi-blur
             .subtitle-1 Wiki.js {{info.currentVersion}}
@@ -91,17 +91,6 @@
                 td
                   .body-2: strong {{ props.item.name }}
                 td.text-right.caption(width='250') {{ props.item.lastLoginAt | moment('calendar') }}
-
-      v-flex(xs12)
-        v-card.dashboard-contribute.animated.fadeInUp.wait-p4s
-          v-card-text
-            img(src='/_assets/svg/icon-heart-health.svg', alt='Contribute', style='height: 80px;')
-            .pl-5
-              .subtitle-1 {{$t('admin:contribute.title')}}
-              .body-2.mt-3: strong {{$t('admin:dashboard.contributeSubtitle')}}
-              .body-2 {{$t('admin:dashboard.contributeHelp')}}
-              v-btn.mx-0.mt-4(:color='$vuetify.theme.dark ? `indigo lighten-3` : `indigo`', outlined, small, to='/contribute')
-                .caption: strong {{$t('admin:dashboard.contributeLearnMore')}}
 
 </template>
 

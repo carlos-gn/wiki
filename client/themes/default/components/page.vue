@@ -3,7 +3,7 @@
     nav-header(v-if='!printView')
     v-navigation-drawer(
       v-if='navMode !== `NONE` && !printView'
-      :class='$vuetify.theme.dark ? `grey darken-4-d4` : `primary`'
+      :class='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-5`'
       dark
       app
       clipped
@@ -13,7 +13,7 @@
       :right='$vuetify.rtl'
       )
       vue-scroll(:ops='scrollStyle')
-        nav-sidebar(:color='$vuetify.theme.dark ? `grey darken-4-d4` : `primary`', :items='sidebarDecoded', :nav-mode='navMode')
+        nav-sidebar(:color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-5`', :items='sidebarDecoded', :nav-mode='navMode')
 
     v-fab-transition(v-if='navMode !== `NONE`')
       v-btn(
@@ -194,7 +194,7 @@
             //-       .caption.grey--text 5 votes
 
             v-card.page-shortcuts-card(flat)
-              v-toolbar(:color='$vuetify.theme.dark ? `grey darken-4-d3` : `grey lighten-3`', flat, dense)
+              v-toolbar(:color='$vuetify.theme.dark ? `grey darken-4-d3` : `grey lighten-5`', flat, dense)
                 v-spacer
                 //- v-tooltip(bottom)
                 //-   template(v-slot:activator='{ on }')
@@ -242,6 +242,7 @@
                     v-btn.btn-animate-edit(
                       fab
                       color='primary'
+                      class="white--text"
                       v-model='pageEditFab'
                       @click='pageEdit'
                       v-on='onEditActivator'
@@ -346,7 +347,8 @@
         small
         :depressed='this.$vuetify.breakpoint.mdAndUp'
         @click='$vuetify.goTo(0, scrollOpts)'
-        color='primary'
+        :color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-5`'
+        :class='$vuetify.theme.dark ? `white--text` : `black--text`'
         dark
         :style='upBtnPosition'
         :aria-label='$t(`common:actions.returnToTop`)'

@@ -109,7 +109,7 @@
 
             v-flex(lg6 xs12)
               v-card.animated.fadeInUp.wait-p4s
-                v-toolbar(color='indigo', dark, dense, flat)
+                v-toolbar(color='primary', dark, dense, flat)
                   v-toolbar-title.subtitle-1 Features
                 v-card-text
                   //- v-switch(
