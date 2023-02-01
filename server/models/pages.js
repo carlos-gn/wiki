@@ -489,6 +489,36 @@ module.exports = class Page extends Model {
   }
 
   /**
+   * Update an Existing Page Scheduling
+   *
+   * @param {Object} opts Scheduling Properties
+   * @returns {Promise} Promise of the Page Model Instance
+   */
+  static async scheduling(opts) {
+    // -> Fetch original page
+    const ogPage = await WIKI.models.pages.query().findById(opts.id)
+    if (!ogPage) {
+      throw new Error('Invalid Page Id')
+    }
+
+    // -> Check for page access
+    if (!WIKI.auth.checkAccess(opts.user, ['write:pages'], {
+      locale: ogPage.localeCode,
+      path: ogPage.path
+    })) {
+      throw new WIKI.Error.PageUpdateForbidden()
+    }
+
+    // -> Update page
+    await WIKI.models.pages.query().patch({
+      isPublished: opts.isPublished
+    }).where('id', ogPage.id)
+    let page = await WIKI.models.pages.getPageFromDb(ogPage.id)
+
+    return page
+  }
+
+  /**
    * Convert an Existing Page
    *
    * @param {Object} opts Page Properties

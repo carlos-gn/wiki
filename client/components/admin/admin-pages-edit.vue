@@ -43,10 +43,28 @@
                 v-list-item-icon
                   v-icon(color='grey') mdi-cube-scan
                 v-list-item-title Re-Render
-              v-list-item(@click='', disabled)
-                v-list-item-icon
-                  v-icon(color='grey') mdi-earth-remove
-                v-list-item-title Unpublish
+              v-dialog(v-model='schedulingDialog', max-width='500')
+                template(v-slot:activator='{ on }')
+                  v-list-item(v-on='on')
+                    v-list-item-icon
+                      v-icon(color='indigo') mdi-earth
+                    v-list-item-title Scheduling
+                v-card
+                  .dialog-header.is-short.isBlue
+                    v-icon.mr-2(color='white') mdi-file-document-box-remove-outline
+                    span Scheduling
+                  v-card-text.pt-5
+                    span Are you sure you want to {{page.isPublished ? "unpublish " : "publish "}}
+                    span.primary--text.text--darken-2 {{ page.title }}?
+                    .caption You will be available to {{page.isPublished ? "publish " : "unpublish "}} again.
+                    v-chip.mt-3.ml-0.mr-1(label, color='blue lighten-5', disabled, small)
+                      .caption.blue--text.text--darken-4 {{page.locale.toUpperCase()}}
+                    v-chip.mt-3.mx-0(label, color='blue lighten-5', disabled, small)
+                      span.blue--text.text--darken-4 /{{page.path}}
+                  v-card-chin
+                    v-spacer
+                    v-btn(text, @click='schedulingDialog = false', :disabled='loading') {{$t('common:actions.cancel')}}
+                    v-btn(color='primary', @click='publishPage', :loading='loading').white--text {{page.isPublished ? "Unpublish" : "Publish"}}
               v-list-item(:href='`/s/` + page.locale + `/` + page.path')
                 v-list-item-icon
                   v-icon(color='indigo') mdi-code-tags
@@ -166,6 +184,7 @@ import { StatusIndicator } from 'vue-status-indicator'
 
 import pageQuery from 'gql/admin/pages/pages-query-single.gql'
 import deletePageMutation from 'gql/common/common-pages-mutation-delete.gql'
+import gql from 'graphql-tag'
 
 export default {
   components: {
@@ -173,12 +192,64 @@ export default {
   },
   data() {
     return {
+      schedulingDialog: false,
       deletePageDialog: false,
       page: {},
       loading: false
     }
   },
   methods: {
+    async publishPage() {
+      this.loading = true
+      this.$store.commit(`loadingStart`, 'page-scheduling')
+
+      try {
+        const isPublished = !this.page.isPublished
+        const resp = await this.$apollo.mutate({
+          mutation: gql`
+              mutation (
+                $id: Int!
+                $isPublished: Boolean
+              ) {
+                pages {
+                  scheduling(
+                    id: $id
+                    isPublished: $isPublished
+                  ) {
+                    responseResult {
+                      succeeded
+                      errorCode
+                      slug
+                      message
+                    }
+                  }
+                }
+              }
+            `,
+          variables: {
+            id: this.page.id,
+            isPublished
+          }
+        })
+        if (_.get(resp, 'data.pages.scheduling.responseResult.succeeded')) {
+          this.schedulingDialog = false
+          this.$store.commit('showNotification', {
+            message: 'Update succeeded',
+            style: 'success',
+            icon: 'check'
+          })
+
+          await this.$apollo.queries.page.refetch()
+        } else {
+          throw new Error(_.get(resp, 'data.pages.scheduling.responseResult.message', this.$t('common:error.unexpected')))
+        }
+      } catch (err) {
+        this.$store.commit('pushGraphError', err)
+      }
+
+      this.loading = false
+      this.$store.commit(`loadingStop`, 'page-scheduling')
+    },
     async deletePage() {
       this.loading = true
       this.$store.commit(`loadingStart`, 'page-delete')
@@ -221,8 +292,11 @@ export default {
         }
       },
       fetchPolicy: 'network-only',
-      update: (data) => data.pages.single,
-      watchLoading (isLoading) {
+      update: (data) => {
+        console.log(data)
+        return data.pages.single
+      },
+      watchLoading(isLoading) {
         this.$store.commit(`loading${isLoading ? 'Start' : 'Stop'}`, 'admin-pages-refresh')
       }
     }
