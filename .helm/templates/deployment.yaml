@@ -82,7 +82,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       nodeSelector:
-        eks.amazonaws.com/nodegroup: development
+        eks.amazonaws.com/nodegroup: {{$.Values.nodeSelector}}
     {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
