@@ -20,11 +20,11 @@ data:
     values:
       deployment.secret: arn:aws:secretsmanager:eu-west-1:221581667315:secret:/wiki/dev-Pgb1Q5
       externalPostgresql.databaseURL: $DEV_DATABASE_URL
-      ingress.hosts.host: wiki.deel.training
+      ingress.host: wiki.deel.training
       nodeSelector: development
   prod:
     values:
       deployment.secret: arn:aws:secretsmanager:eu-west-1:221581667315:secret:/wiki/prod-DPoZMs
       externalPostgresql.databaseURL: $PROD_DATABASE_URL
-      ingress.hosts.host: wiki.deel.network
+      ingress.host: wiki.deel.network
       nodeSelector: production
