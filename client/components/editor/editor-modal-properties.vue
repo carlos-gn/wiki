@@ -19,7 +19,7 @@
     v-card(tile)
       v-tabs(color='white', background-color='blue darken-1', dark, centered, v-model='currentTab')
         v-tab {{$t('editor:props.info')}}
-        v-tab {{$t('editor:props.scheduling')}}
+        v-tab(:disabled='!hasPublishPermission') {{$t('editor:props.scheduling')}}
         v-tab(:disabled='!hasScriptPermission') {{$t('editor:props.scripts')}}
         v-tab(disabled) {{$t('editor:props.social')}}
         v-tab(:disabled='!hasStylePermission') {{$t('editor:props.styles')}}
@@ -276,10 +276,10 @@ export default {
       currentTab: 0,
       cm: null,
       rules: {
-          required: value => !!value || 'This field is required.',
-          path: value => {
-            return filenamePattern.test(value) || 'Invalid path. Please ensure it does not contain special characters, or begin/end in a slash or hashtag string.'
-          }
+        required: value => !!value || 'This field is required.',
+        path: value => {
+          return filenamePattern.test(value) || 'Invalid path. Please ensure it does not contain special characters, or begin/end in a slash or hashtag string.'
+        }
       }
     }
   },
@@ -301,6 +301,7 @@ export default {
     scriptCss: sync('page/scriptCss'),
     hasScriptPermission: get('page/effectivePermissions@pages.script'),
     hasStylePermission: get('page/effectivePermissions@pages.style'),
+    hasPublishPermission: get('page/effectivePermissions@system.manage'),
     pageSelectorMode () {
       return (this.mode === 'create') ? 'create' : 'move'
     }

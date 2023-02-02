@@ -401,6 +401,23 @@ module.exports = {
       }
     },
     /**
+     * PAGE SCHEDULING
+     */
+    async scheduling(obj, args, context) {
+      try {
+        const page = await WIKI.models.pages.scheduling({
+          ...args,
+          user: context.req.user
+        })
+        return {
+          responseResult: graphHelper.generateSuccess('Page has been updated.'),
+          page
+        }
+      } catch (err) {
+        return graphHelper.generateError(err)
+      }
+    },
+    /**
      * CONVERT PAGE
      */
     async convert(obj, args, context) {

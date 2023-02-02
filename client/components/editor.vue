@@ -111,7 +111,7 @@ export default {
     },
     isPublished: {
       type: Boolean,
-      default: true
+      default: false
     },
     scriptCss: {
       type: String,
