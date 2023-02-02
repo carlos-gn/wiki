@@ -253,7 +253,7 @@
 import _ from 'lodash'
 import Cookies from 'js-cookie'
 import gql from 'graphql-tag'
-import { sync } from 'vuex-pathify'
+import { get, sync } from 'vuex-pathify'
 
 export default {
   i18nOptions: { namespaces: 'auth' },
@@ -313,6 +313,7 @@ export default {
         return this.strategies
       }
     },
+    isAuthenticated: get('user/authenticated'),
     isUsernameEmail () {
       return this.selectedStrategy.strategy.usernameType === `email`
     }
@@ -340,6 +341,10 @@ export default {
     }
   },
   mounted () {
+    if (this.isAuthenticated) {
+      window.location.replace('/')
+    }
+
     this.isShown = true
     if (this.changePwdContinuationToken) {
       this.screen = 'changePwd'
