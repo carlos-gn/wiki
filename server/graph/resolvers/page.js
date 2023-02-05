@@ -239,27 +239,44 @@ module.exports = {
         }
       }
 
-      const results = await WIKI.models.knex('pageTree').where(builder => {
-        builder.where('localeCode', args.locale)
-        switch (args.mode) {
-          case 'FOLDERS':
-            builder.andWhere('isFolder', true)
-            break
-          case 'PAGES':
-            builder.andWhereNotNull('pageId')
-            break
-        }
-        if (!args.parent || args.parent < 1) {
-          builder.whereNull('parent')
-        } else {
-          builder.where('parent', args.parent)
-          if (args.includeAncestors && curPage && curPage.ancestors.length > 0) {
-            builder.orWhereIn('id', _.isString(curPage.ancestors) ? JSON.parse(curPage.ancestors) : curPage.ancestors)
+      const results = await WIKI.models.knex('pageTree')
+        .column(
+          { id: 'pageTree.id' },
+          { path: 'pageTree.path' },
+          { title: 'pageTree.path' },
+          { isPrivate: 'pageTree.isPrivate' },
+          { privateNS: 'pageTree.privateNS' },
+          { localeCode: 'pageTree.localeCode' },
+          'depth',
+          'pageId',
+          'parent',
+          'isFolder',
+          'ancestors',
+          'isPublished')
+        .leftJoin('pages', 'pageTree.pageId', 'pages.id')
+        .where(builder => {
+          builder.where('pageTree.localeCode', args.locale)
+          switch (args.mode) {
+            case 'FOLDERS':
+              builder.andWhere('isFolder', true)
+              break
+            case 'PAGES':
+              builder.andWhereNotNull('pageId')
+              break
           }
-        }
-      }).orderBy([{ column: 'isFolder', order: 'desc' }, 'title'])
+          if (!args.parent || args.parent < 1) {
+            builder.whereNull('parent')
+          } else {
+            builder.where('parent', args.parent)
+            if (args.includeAncestors && curPage && curPage.ancestors.length > 0) {
+              builder.orWhereIn('pageTree.id', _.isString(curPage.ancestors) ? JSON.parse(curPage.ancestors) : curPage.ancestors)
+            }
+          }
+        }).orderBy([{ column: 'isFolder', order: 'desc' }, 'title'])
       return results.filter(r => {
-        return WIKI.auth.checkAccess(context.req.user, ['read:pages'], {
+        // If unpublished page - show it only to users with write access
+        // Otherwise - show the folder/page based on the read permission
+        return WIKI.auth.checkAccess(context.req.user, !r.isFolder && !r.isPublished ? ['write:pages'] : ['read:pages'], {
           path: r.path,
           locale: r.localeCode
         })
