@@ -323,7 +323,7 @@
                         v-icon(size='20') mdi-trash-can-outline
                     span {{$t('common:header.delete')}}
               span {{$t('common:page.editPage')}}
-            v-alert.mb-5(v-if='!isPublished', color='red', outlined, icon='mdi-minus-circle', dense)
+            v-alert.mb-5(v-if='!isPublished', color='red', border="bottom", type="info")
               .caption {{$t('common:page.unpublishedWarning')}}
             .contents(ref='container')
               slot(name='contents')
