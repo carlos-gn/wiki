@@ -726,7 +726,6 @@ export default {
       padding: 12px 0 0 12px;
       width: 58px;
       height: 58px;
-      background-color: #222;
       margin-left: 12px;
       border-bottom-left-radius: 7px;
       border-bottom-right-radius: 7px;
