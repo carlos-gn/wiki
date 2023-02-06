@@ -53,7 +53,7 @@
         v-list-item(v-for='(item, idx) of parents', :key='`parent-` + item.id', @click='fetchBrowseItems(item)', style='min-height: 30px;' class='navigation-list-item')
           v-list-item-avatar(size='18', :style='`padding-left: ` + (idx * 8) + `px; width: auto; margin: 0 5px 0 0;`')
             v-icon(small  :class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-folder-open
-          v-list-item-title( :class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize') {{ item.title }}
+          v-list-item-title( :class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize') {{ getItemName(item.title) }}
         v-divider.mt-2(:class='$vuetify.theme.dark ? `` : `border-color: white`')
         v-list-item.mt-2(v-if='currentParent.pageId > 0', :href='`/` + currentParent.locale + `/` + currentParent.path', :key='`directorypage-` + currentParent.id', :input-value='path === currentParent.path')
           v-list-item-avatar(size='24')
@@ -64,11 +64,11 @@
         v-list-item(v-if='item.isFolder', :key='`childfolder-` + item.id', @click='fetchBrowseItems(item)' class='navigation-list-item')
           v-list-item-avatar(size='24')
             v-icon(:class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-folder
-          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize') {{ item.title }}
+          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize') {{ getItemName(item.title) }}
         v-list-item(v-else, :href='`/` + item.locale + `/` + item.path', :key='`childpage-` + item.id', :input-value='path === item.path' class='navigation-list-item')
           v-list-item-avatar(size='24')
             v-icon( :class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-text-box
-          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize' ) {{ item.title }}
+          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize') {{ getItemName(item.title) }}
 </template>
 
 <script>
@@ -223,6 +223,10 @@ export default {
     },
     goHome () {
       window.location.assign(siteLangs.length > 0 ? `/${this.locale}/home` : '/')
+    },
+    getItemName (itemTitle) {
+      const parts = itemTitle.split('/')
+      return parts[parts.length - 1]
     }
   },
   mounted () {
