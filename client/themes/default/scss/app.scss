@@ -483,7 +483,7 @@
   // LISTS
   // ---------------------------------
 
-  ol, ul:not(.tabset-tabs) {
+  ol, ul:not(.tabset-tabs, td *) {
     padding-top: 1rem;
     width: 100%;
 

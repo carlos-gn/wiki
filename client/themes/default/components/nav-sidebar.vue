@@ -64,11 +64,11 @@
         v-list-item(v-if='item.isFolder', :key='`childfolder-` + item.id', @click='fetchBrowseItems(item)' class='navigation-list-item')
           v-list-item-avatar(size='24')
             v-icon(:class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-folder
-          v-list-item-title( :class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize') {{ item.title }}
+          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize') {{ item.title }}
         v-list-item(v-else, :href='`/` + item.locale + `/` + item.path', :key='`childpage-` + item.id', :input-value='path === item.path' class='navigation-list-item')
           v-list-item-avatar(size='24')
             v-icon( :class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-text-box
-          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`') {{ item.title }}
+          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize' ) {{ item.title }}
 </template>
 
 <script>
@@ -185,7 +185,7 @@ export default {
                 isFolder
                 pageId
                 parent
-                locale
+                locale             
               }
             }
           }
