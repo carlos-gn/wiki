@@ -58,7 +58,7 @@
         v-list-item.mt-2(v-if='currentParent.pageId > 0', :href='`/` + currentParent.locale + `/` + currentParent.path', :key='`directorypage-` + currentParent.id', :input-value='path === currentParent.path')
           v-list-item-avatar(size='24')
             v-icon(:class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-text-box
-          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`') {{ currentParent.title }}
+          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`') {{ getItemName(currentParent.title) }}
         v-subheader.pl-4( :class='$vuetify.theme.dark ? `white--text` : `black--text`') {{$t('common:sidebar.currentDirectory')}}
       template(v-for='item of currentItems')
         v-list-item(v-if='item.isFolder', :key='`childfolder-` + item.id', @click='fetchBrowseItems(item)' class='navigation-list-item')
