@@ -900,7 +900,8 @@
 
   figure.table {
     margin: 0;
-
+    overflow-x: auto;
+    
     > table {
       background-color: #FFF;
       margin: 0;
@@ -1236,6 +1237,7 @@
     color: #000;
     background-color: #FFF;
 
+    
     @at-root .theme--dark & {
       color: #000;
     }
