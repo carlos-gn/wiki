@@ -6,9 +6,9 @@ exports.up = async (knex) => {
       table.increments('id').primary()
       table.string('question').notNullable()
       table.string('answer').notNullable()
-      table.json('metadata')
-      table.text('score')
-      table.timestamp('createdAt').notNullable().defaultTo(knex.fn.now())
+      table.jsonb('metadata')
+      table.integer('score')
+      table.timestamp('created_at').notNullable().defaultTo(knex.fn.now())
     })
 }
 
