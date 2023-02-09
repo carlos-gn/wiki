@@ -3,6 +3,7 @@ const fs = require('fs-extra')
 const semver = require('semver')
 
 const baseMigrationPath = path.join(WIKI.SERVERPATH, (WIKI.config.db.type !== 'sqlite') ? 'db/migrations' : 'db/migrations-sqlite')
+const deelMigrationPath = path.join(WIKI.SERVERPATH, 'db/deel-migrations')
 
 /* global WIKI */
 
@@ -13,10 +14,18 @@ module.exports = {
    */
   async getMigrations() {
     const migrationFiles = await fs.readdir(baseMigrationPath)
-    return migrationFiles.map(m => m.replace('.js', '')).sort(semver.compare).map(m => ({
+    const versionMigrations = migrationFiles.map(m => m.replace('.js', '')).sort(semver.compare).map(m => ({
       file: m,
       directory: baseMigrationPath
     }))
+
+    const deelMigrationFiles = await fs.readdir(deelMigrationPath)
+    const deelMigrations = deelMigrationFiles.filter((m) => !m.startsWith('_dummy')).map(m => m.replace('.js', '')).sort().map(m => ({
+      file: m,
+      directory: deelMigrationPath
+    }))
+
+    return [...versionMigrations, ...deelMigrations]
   },
 
   getMigrationName(migration) {
@@ -24,6 +33,6 @@ module.exports = {
   },
 
   getMigration(migration) {
-    return require(path.join(baseMigrationPath, migration.file))
+    return require(path.join(migration.directory, migration.file))
   }
 }
