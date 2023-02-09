@@ -1,9 +1,8 @@
 exports.up = async (knex) => {
-  await knex.raw('CREATE SCHEMA deel')
-
   return knex.schema.withSchema('deel')
-    .createTable('conversations', table => {
+    .createTable('conversation_content', table => {
       table.increments('id').primary()
+      table.integer('conversation_id').references('id').inTable('deel.conversations')
       table.string('question').notNullable()
       table.string('answer').notNullable()
       table.jsonb('metadata')
