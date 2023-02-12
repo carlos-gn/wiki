@@ -6,6 +6,7 @@
   "main": "wiki.js",
   "dev": true,
   "scripts": {
+    "migrations:create": "cp server/db/deel-migrations/_dummy server/db/deel-migrations/`date '+%Y%m%d%H%M%S-dummy.js'`",
     "start": "node server",
     "dev": "node dev",
     "build": "webpack --profile --config dev/webpack/webpack.prod.js",

@@ -1,0 +1,5 @@
+exports.up = knex => {
+  return knex.schema
+}
+
+exports.down = knex => { }
