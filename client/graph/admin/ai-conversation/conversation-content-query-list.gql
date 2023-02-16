@@ -1,0 +1,13 @@
+query {
+  conversationContent {
+    list {
+      id
+      conversationId: conversation_id
+      question
+      answer
+      score
+      feedback      
+      createdAt: created_at
+    }
+  }
+}
