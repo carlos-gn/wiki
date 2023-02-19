@@ -154,7 +154,7 @@ module.exports = {
 
   async processChanges (pageId) {
     try {
-      const { data } = await axios.post(`http://wiki-gpt/process/${pageId}`)
+      const { data } = await axios.post(`http://wiki-gpt/process/${pageId}`, {})
       return data
     } catch (error) {
       console.log(error)

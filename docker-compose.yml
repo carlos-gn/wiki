@@ -1,4 +1,7 @@
 version: "3"
+networks:
+  deel:
+    name: deel
 services:
 
   db:
@@ -14,6 +17,9 @@ services:
       - db-data-12:/var/lib/postgresql/data
     ports:
       - "6543:5432"
+    networks:
+      - deel
+
 
   # wiki:
   #   image: ghcr.io/requarks/wiki:2
