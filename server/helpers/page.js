@@ -9,6 +9,8 @@ const localeFolderRegex = /^([a-z]{2}(?:-[a-z]{2})?\/)?(.*)/i
 // eslint-disable-next-line no-control-regex
 const unsafeCharsRegex = /[\x00-\x1f\x80-\x9f\\"|<>:*?]/
 
+const PROCESS_URL = process.env.NODE_ENV === 'development' ? 'http://localhost:3030/process' : 'http://wiki-gpt/process'
+
 const contentToExt = {
   markdown: 'md',
   asciidoc: 'adoc',
@@ -22,7 +24,7 @@ module.exports = {
   /**
    * Parse raw url path and make it safe
    */
-  parsePath (rawPath, opts = {}) {
+  parsePath(rawPath, opts = {}) {
     let pathObj = {
       locale: WIKI.config.lang.code,
       path: 'home',
@@ -33,11 +35,18 @@ module.exports = {
 
     // Clean Path
     rawPath = _.trim(qs.unescape(rawPath))
-    if (_.startsWith(rawPath, '/')) { rawPath = rawPath.substring(1) }
+    if (_.startsWith(rawPath, '/')) {
+      rawPath = rawPath.substring(1)
+    }
     rawPath = rawPath.replace(unsafeCharsRegex, '')
-    if (rawPath === '') { rawPath = 'home' }
+    if (rawPath === '') {
+      rawPath = 'home'
+    }
 
-    rawPath = rawPath.replace(/\\/g, '').replace(/\/\//g, '').replace(/\.\.+/ig, '')
+    rawPath = rawPath
+      .replace(/\\/g, '')
+      .replace(/\/\//g, '')
+      .replace(/\.\.+/gi, '')
 
     // Extract Info
     let pathParts = _.filter(_.split(rawPath, '/'), p => {
@@ -70,7 +79,10 @@ module.exports = {
    * Generate unique hash from page
    */
   generateHash(opts) {
-    return crypto.createHash('sha1').update(`${opts.locale}|${opts.path}|${opts.privateNS}`).digest('hex')
+    return crypto
+      .createHash('sha1')
+      .update(`${opts.locale}|${opts.path}|${opts.privateNS}`)
+      .digest('hex')
   },
   /**
    * Inject Page Metadata
@@ -87,9 +99,19 @@ module.exports = {
     ]
     switch (page.contentType) {
       case 'markdown':
-        return '---\n' + meta.map(mt => `${mt[0]}: ${mt[1]}`).join('\n') + '\n---\n\n' + page.content
+        return (
+          '---\n' +
+          meta.map(mt => `${mt[0]}: ${mt[1]}`).join('\n') +
+          '\n---\n\n' +
+          page.content
+        )
       case 'html':
-        return '<!--\n' + meta.map(mt => `${mt[0]}: ${mt[1]}`).join('\n') + '\n-->\n\n' + page.content
+        return (
+          '<!--\n' +
+          meta.map(mt => `${mt[0]}: ${mt[1]}`).join('\n') +
+          '\n-->\n\n' +
+          page.content
+        )
       case 'json':
         return {
           ...page.content,
@@ -111,7 +133,8 @@ module.exports = {
     } else if (
       _.some(WIKI.data.reservedPaths, p => {
         return p === firstSection
-      })) {
+      })
+    ) {
       return true
     } else {
       return false
@@ -126,14 +149,14 @@ module.exports = {
   /**
    * Get content type from file extension
    */
-  getContentType (filePath) {
+  getContentType(filePath) {
     const ext = _.last(filePath.split('.'))
     return _.get(extToContent, ext, false)
   },
   /**
    * Get Page Meta object from disk path
    */
-  getPagePath (filePath) {
+  getPagePath(filePath) {
     let fpath = filePath
     if (process.platform === 'win32') {
       fpath = filePath.replace(/\\/g, '/')
@@ -152,10 +175,17 @@ module.exports = {
     return meta
   },
 
-  async processChanges (pageId) {
+  async processChanges(pageId, isPublished) {
     try {
-      const { data } = await axios.post(`http://wiki-gpt/process/${pageId}`, {})
-      return data
+      if (isPublished) {
+        await axios.post(`${PROCESS_URL}/${pageId}`, {})
+      } else {
+        await axios.delete(`${PROCESS_URL}/${pageId}`, {
+          headers: {
+            'content-type': 'text/plain'
+          }
+        })
+      }
     } catch (error) {
       console.log(error)
     }

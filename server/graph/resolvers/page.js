@@ -393,7 +393,7 @@ module.exports = {
           ...args,
           user: context.req.user
         })
-        pageHelper.processChanges(args.id)
+        pageHelper.processChanges(args.id, args.isPublished)
         return {
           responseResult: graphHelper.generateSuccess('Page created successfully.'),
           page
@@ -411,7 +411,7 @@ module.exports = {
           ...args,
           user: context.req.user
         })
-        pageHelper.processChanges(args.id)
+        pageHelper.processChanges(args.id, args.isPublished)
         return {
           responseResult: graphHelper.generateSuccess('Page has been updated.'),
           page
@@ -429,7 +429,7 @@ module.exports = {
           ...args,
           user: context.req.user
         })
-        pageHelper.processChanges(args.id)
+        pageHelper.processChanges(args.id, args.isPublished)
         return {
           responseResult: graphHelper.generateSuccess('Page has been updated.'),
           page
