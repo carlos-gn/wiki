@@ -2,6 +2,7 @@ const qs = require('querystring')
 const _ = require('lodash')
 const crypto = require('crypto')
 const path = require('path')
+const axios = require('axios')
 
 const localeSegmentRegex = /^[A-Z]{2}(-[A-Z]{2})?$/i
 const localeFolderRegex = /^([a-z]{2}(?:-[a-z]{2})?\/)?(.*)/i
@@ -149,5 +150,14 @@ module.exports = {
       }
     }
     return meta
+  },
+
+  async processChanges (pageId) {
+    try {
+      const { data } = await axios.post(`http://wiki-gpt/process/${pageId}`)
+      return data
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
