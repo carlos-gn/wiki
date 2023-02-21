@@ -33,9 +33,10 @@ const state = {
     pages: {
       write: false,
       manage: false,
+      publish: false,
       delete: false,
       script: false,
-      style: false
+      style: false,
     },
     system: {
       manage: false
