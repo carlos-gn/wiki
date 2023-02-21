@@ -24,8 +24,9 @@
 
 ## Setup
 - Install `docker`
-- Fork the repository
-- Run  ```zsh export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token
+- Create a personal access [token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+- Clone the repository
+- Run ```export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token
   --domain npm --domain-owner YOUR_AWS_ACCOUNT_ID --query authorizationToken --output text --region eu-west-1` ```
 - In the project folder run `npm install --legacy-peer-deps`
 
@@ -37,10 +38,8 @@
 
 
 ## Deploying
-- To deploy, simply push your code, and it will be auto-deployed to the whichever branch you pushed to. Say you're on branch `test`, after running `git push`, your code will be deployed
-  Manual Deploying.
+- We do automatic deploying only for `master` and `dev` branches, once your changes will be pushed there it will be automatically deployed.
 - To manually deploy run `npm run deploy` which will build and deploy the app.
-
 
 ## Contact
 Created by [@aviv](mailto:aviv@deel.com) - feel free to contact me!
