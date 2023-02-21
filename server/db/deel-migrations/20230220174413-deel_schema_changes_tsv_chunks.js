@@ -2,7 +2,7 @@ exports.up = knex => {
   return knex.schema.withSchema('deel')
     .dropTable('page_chunks')
     .createTable('page_chunks', table => {
-      table.integer('page_id').references('id').inTable('public.pages').onDelete('CASCADE')
+      table.integer('page_id').notNullable().references('id').inTable('public.pages').onDelete('CASCADE')
       table.integer('ordinal').notNullable()
       table.string('text').notNullable()
       table.integer('tokens').notNullable()
@@ -15,7 +15,7 @@ exports.up = knex => {
     .dropTable('page_tsvs')
     .createTable('page_tsvs', table => {
       table.integer('page_id').references('id').inTable('public.pages').onDelete('CASCADE').primary()
-      table.specificType('tsv', 'tsvector').index(null, 'GIN')
+      table.specificType('tsv', 'tsvector').index(null, 'GIN').notNullable()
     })
 }
 
