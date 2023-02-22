@@ -8,7 +8,6 @@
 * [Usage](#usage)
 * [Deploying](#Deploying)
 * [Feature Requests](https://feedback.js.wiki/wiki)
-* [Contact](#contact)
 * [License](#license)
 
 
@@ -39,10 +38,6 @@
 
 ## Deploying
 - We do automatic deploying only for `master` and `dev` branches, once your changes will be pushed there it will be automatically deployed.
-- To manually deploy run `npm run deploy` which will build and deploy the app.
-
-## Contact
-Created by [@aviv](mailto:aviv@deel.com) - feel free to contact me!
 
 
 ## License
