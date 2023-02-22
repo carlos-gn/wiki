@@ -242,8 +242,6 @@ export default {
       fetchPolicy: 'network-only',
       manual: true,
       result({ data, loading, networkStatus }) {
-        console.log(data);
-
         this.info = data.system.info;
       },
       watchLoading (isLoading) {

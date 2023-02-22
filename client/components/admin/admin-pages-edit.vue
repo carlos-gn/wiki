@@ -315,7 +315,6 @@ export default {
       },
       fetchPolicy: 'network-only',
       update: (data) => {
-        console.log(data)
         return data.pages.single
       },
       watchLoading(isLoading) {
