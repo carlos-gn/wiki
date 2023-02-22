@@ -824,7 +824,7 @@ module.exports = class Page extends Model {
     }
 
     // -> Check for page access
-    if (!WIKI.auth.checkAccess(opts.user, ['delete:pages'], {
+    if (!WIKI.auth.checkAccess(opts.user, ['delete:pages', 'publish:pages'], {
       locale: page.locale,
       path: page.path
     })) {

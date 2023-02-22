@@ -65,11 +65,11 @@
                     v-spacer
                     v-btn(text, @click='schedulingDialog = false', :disabled='loading') {{$t('common:actions.cancel')}}
                     v-btn(color='primary', @click='publishPage', :loading='loading').white--text {{page.isPublished ? "Unpublish" : "Publish"}}
-              v-list-item(:href='`/s/` + page.locale + `/` + page.path')
+              v-list-item(:href='`/s/` + page.locale + `/` + page.path', :disabled="!hasReadSourcePermission")
                 v-list-item-icon
                   v-icon(color='indigo') mdi-code-tags
                 v-list-item-title View Source
-              v-list-item(:href='`/h/` + page.locale + `/` + page.path')
+              v-list-item(:href='`/h/` + page.locale + `/` + page.path', :disabled="!hasReadHistoryPermission")
                 v-list-item-icon
                   v-icon(color='indigo') mdi-history
                 v-list-item-title View History
@@ -181,6 +181,7 @@
 <script>
 import _ from 'lodash'
 import { StatusIndicator } from 'vue-status-indicator'
+import { get } from 'vuex-pathify'
 
 import pageQuery from 'gql/admin/pages/pages-query-single.gql'
 import deletePageMutation from 'gql/common/common-pages-mutation-delete.gql'
@@ -196,6 +197,27 @@ export default {
       deletePageDialog: false,
       page: {},
       loading: false
+    }
+  },
+  computed: {
+    permissions: get('user/permissions'),
+    isAdmin () {
+      return _.intersection(this.permissions, ['manage:system', 'write:users', 'manage:users', 'write:groups', 'manage:groups', 'manage:navigation', 'manage:theme', 'manage:api']).length > 0
+    },
+    hasReadSourcePermission() {
+      if (this.isAdmin) {
+        return true;
+      }
+
+      return get('page/effectivePermissions@source.read');
+    },
+    hasReadHistoryPermission() {
+      if (this.isAdmin) {
+        return true;
+      }
+
+      return get('page/effectivePermissions@history.read');
+
     }
   },
   methods: {

@@ -115,7 +115,7 @@ type PageMutation {
   scheduling (
       id: Int!
       isPublished: Boolean
-  ):  PageResponse @auth(requires: ["manage:system"])
+  ):  PageResponse @auth(requires: ["manage:system", "publish:pages"])
 
   convert(
     id: Int!
@@ -130,7 +130,7 @@ type PageMutation {
 
   delete(
     id: Int!
-  ): DefaultResponse @auth(requires: ["delete:pages", "manage:system"])
+  ): DefaultResponse @auth(requires: ["delete:pages", "manage:system", "publish:pages"])
 
   deleteTag(
     id: Int!
