@@ -178,7 +178,7 @@
 
           //- ADMIN
 
-          template(v-if='isAuthenticated && isAdmin')
+          template(v-if="hasAdministrationAccess")
             v-tooltip(bottom, v-if='mode !== `admin`')
               template(v-slot:activator='{ on }')
                 v-btn(icon, tile, height='64', v-on='on', href='/a', :aria-label='$t(`common:header.admin`)')
@@ -326,6 +326,7 @@ export default {
     hasNewPagePermission () {
       return this.hasAdminPermission || _.intersection(this.permissions, ['write:pages']).length > 0
     },
+    hasPublishPermission: get('page/effectivePermissions@pages.publish'),
     hasAdminPermission: get('page/effectivePermissions@system.manage'),
     hasWritePagesPermission: get('page/effectivePermissions@pages.write'),
     hasManagePagesPermission: get('page/effectivePermissions@pages.manage'),
@@ -335,7 +336,11 @@ export default {
     hasAnyPagePermissions () {
       return this.hasAdminPermission || this.hasWritePagesPermission || this.hasManagePagesPermission ||
         this.hasDeletePagesPermission || this.hasReadSourcePermission || this.hasReadHistoryPermission
+    },
+    hasAdministrationAccess() {
+      return this.isAuthenticated && (this.isAdmin || this.hasPublishPermission);
     }
+
   },
   created () {
     if (this.hideSearch || this.dense || this.$vuetify.breakpoint.smAndDown) {

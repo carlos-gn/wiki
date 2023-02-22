@@ -23,7 +23,7 @@
             v-list-item(to='/navigation', color='primary', v-if='hasPermission([`manage:system`, `manage:navigation`])')
               v-list-item-avatar(size='24', tile): v-icon mdi-near-me
               v-list-item-title {{ $t('admin:navigation.title') }}
-            v-list-item(to='/pages', color='primary', v-if='hasPermission([`manage:system`, `write:pages`, `manage:pages`, `delete:pages`])')
+            v-list-item(to='/pages', color='primary', v-if='hasPermission([`manage:system`, `write:pages`, `manage:pages`, `delete:pages`, `publish:pages`])')
               v-list-item-avatar(size='24', tile): v-icon mdi-file-document-outline
               v-list-item-title {{ $t('admin:pages.title') }}
               v-list-item-action(style='min-width:auto;')
@@ -135,7 +135,8 @@ import _ from 'lodash'
 import VueRouter from 'vue-router'
 import { get, sync } from 'vuex-pathify'
 
-import statsQuery from 'gql/admin/dashboard/dashboard-query-stats.gql'
+import statsQuery from '../graph/admin/dashboard/dashboard-query-stats.gql'
+import pubStatsQuery from '../graph/admin/dashboard/publisher-dashboard-stats.gql';
 
 import adminStore from '../store/admin'
 
@@ -213,7 +214,10 @@ export default {
   },
   computed: {
     info: sync('admin/info'),
-    permissions: get('user/permissions')
+    permissions: get('user/permissions'),
+    isAdmin () {
+      return _.intersection(this.permissions, ['manage:system', 'write:users', 'manage:users', 'write:groups', 'manage:groups', 'manage:navigation', 'manage:theme', 'manage:api']).length > 0
+    },
   },
   router,
   created() {
@@ -232,11 +236,15 @@ export default {
   },
   apollo: {
     info: {
-      query: statsQuery,
+      query() {
+        return this.isAdmin ? statsQuery : pubStatsQuery;
+      },
       fetchPolicy: 'network-only',
       manual: true,
       result({ data, loading, networkStatus }) {
-        this.info = data.system.info
+        console.log(data);
+
+        this.info = data.system.info;
       },
       watchLoading (isLoading) {
         this.$store.commit(`loading${isLoading ? 'Start' : 'Stop'}`, 'admin-stats-refresh')
