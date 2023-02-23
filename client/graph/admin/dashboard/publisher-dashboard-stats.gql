@@ -1,0 +1,9 @@
+query {
+  system {
+    info {
+      currentVersion
+      latestVersion
+      pagesTotal
+    }
+  }
+}

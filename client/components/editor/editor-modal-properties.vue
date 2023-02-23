@@ -301,7 +301,7 @@ export default {
     scriptCss: sync('page/scriptCss'),
     hasScriptPermission: get('page/effectivePermissions@pages.script'),
     hasStylePermission: get('page/effectivePermissions@pages.style'),
-    hasPublishPermission: get('page/effectivePermissions@system.manage'),
+    hasPublishPermission: get('page/effectivePermissions@pages.publish'),
     pageSelectorMode () {
       return (this.mode === 'create') ? 'create' : 'move'
     }

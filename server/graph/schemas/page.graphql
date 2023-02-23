@@ -115,7 +115,7 @@ type PageMutation {
   scheduling (
       id: Int!
       isPublished: Boolean
-  ):  PageResponse @auth(requires: ["manage:system"])
+  ):  PageResponse @auth(requires: ["publish:pages"])
 
   convert(
     id: Int!
