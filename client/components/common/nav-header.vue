@@ -326,7 +326,9 @@ export default {
     hasNewPagePermission () {
       return this.hasAdminPermission || _.intersection(this.permissions, ['write:pages']).length > 0
     },
-    hasPublishPermission: get('page/effectivePermissions@pages.publish'),
+    hasPublishPermission() {
+      return _.intersection(this.permissions, ['publish:pages']).length > 0
+    },
     hasAdminPermission: get('page/effectivePermissions@system.manage'),
     hasWritePagesPermission: get('page/effectivePermissions@pages.write'),
     hasManagePagesPermission: get('page/effectivePermissions@pages.manage'),
