@@ -73,6 +73,13 @@ export default {
               disabled: false
             },
             {
+              permission: 'publish:pages',
+              hint: 'Can publish existing pages, as specified in the Page Rules',
+              warning: false,
+              restrictedForSystem: true,
+              disabled: false,
+            },
+            {
               permission: 'write:styles',
               hint: 'Can insert CSS styles in pages, as specified in the Page Rules',
               warning: false,

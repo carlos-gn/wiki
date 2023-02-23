@@ -18,7 +18,7 @@
               :formatValue='round'
               easing='easeOutQuint'
               )
-      v-flex(xs12 md6 lg4 xl3 d-flex)
+      v-flex(xs12 md6 lg4 xl3 d-flex v-if="isAdmin")
         v-card.primary.dashboard-card.animated.fadeInUp.wait-p2s(dark)
           v-card-text
             v-icon.dashboard-icon mdi-account
@@ -29,7 +29,7 @@
               :formatValue='round'
               easing='easeOutQuint'
               )
-      v-flex(xs12 md6 lg4 xl3 d-flex)
+      v-flex(xs12 md6 lg4 xl3 d-flex v-if="isAdmin")
         v-card.primary.dashboard-card.animated.fadeInUp.wait-p4s(dark)
           v-card-text
             v-icon.dashboard-icon mdi-account-group
@@ -73,7 +73,7 @@
                   v-chip(label, small, :color='$vuetify.theme.dark ? `grey darken-4` : `grey lighten-4`') {{ props.item.locale }}
                   span.ml-2.grey--text(:class='$vuetify.theme.dark ? `text--lighten-1` : `text--darken-2`') / {{ props.item.path }}
                 td.text-right.caption(width='250') {{ props.item.updatedAt | moment('calendar') }}
-      v-flex(xs12, xl6)
+      v-flex(xs12, xl6 v-if="isAdmin")
         v-card.radius-7.animated.fadeInUp.wait-p4s
           v-toolbar(:color='$vuetify.theme.dark ? `grey darken-2` : `grey lighten-5`', dense, flat)
             v-spacer
@@ -131,7 +131,10 @@ export default {
       }
     },
     info: get('admin/info'),
-    permissions: get('user/permissions')
+    permissions: get('user/permissions'),
+    isAdmin () {
+      return _.intersection(this.permissions, ['manage:system', 'write:users', 'manage:users', 'write:groups', 'manage:groups', 'manage:navigation', 'manage:theme', 'manage:api']).length > 0
+    },
   },
   methods: {
     round(val) { return Math.round(val) },
@@ -189,6 +192,9 @@ export default {
       watchLoading (isLoading) {
         this.lastLoginsLoading = isLoading
         this.$store.commit(`loading${isLoading ? 'Start' : 'Stop'}`, 'admin-dashboard-lastlogins')
+      },
+      skip() {
+        return !this.isAdmin;
       }
     }
   }
