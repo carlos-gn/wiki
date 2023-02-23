@@ -75,9 +75,12 @@
               v-list-item-avatar(size='24', tile): v-icon mdi-harddisk
               v-list-item-title {{ $t('admin:storage.title') }}
             v-subheader.pl-4 AI
-            v-list-item(to='/ai-feedback', color='primary', v-if='hasPermission(`manage:system`)')
+            v-list-item(to='/ai-conversations', color='primary', v-if='hasPermission(`manage:system`)')
               v-list-item-avatar(size='24', tile): v-icon mdi-comment-quote
-              v-list-item-title Feedback
+              v-list-item-title Conversations
+            v-list-item(to='/ai-missing-topics', color='primary', v-if='hasPermission(`manage:system`)')
+              v-list-item-avatar(size='24', tile): v-icon mdi-database-minus-outline
+              v-list-item-title Missing Topics
           template(v-if='hasPermission([`manage:system`, `manage:api`])')
             v-divider.my-2
             v-subheader.pl-4 {{ $t('admin:nav.system') }}
@@ -171,7 +174,8 @@ const router = new VueRouter({
     { path: '/logging', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-logging.vue') },
     { path: '/search', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-search.vue') },
     { path: '/storage', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-storage.vue') },
-    { path: '/ai-feedback', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-ai-feedbacks.vue') },
+    { path: '/ai-conversations', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-ai-conversations.vue') },
+    { path: '/ai-missing-topics', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-ai-missing-topics.vue') },
     { path: '/api', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-api.vue') },
     { path: '/mail', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-mail.vue') },
     { path: '/security', component: () => import(/* webpackChunkName: "admin" */ './admin/admin-security.vue') },

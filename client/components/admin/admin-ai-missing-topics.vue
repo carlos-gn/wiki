@@ -3,10 +3,10 @@
     v-layout(row wrap)
       v-flex(xs12)
         .admin-header
-          img.animated.fadeInUp(src='/_assets/svg/icon-web-design.svg', alt='Feedback', style='width: 80px;')
+          img.animated.fadeInUp(src='/_assets/svg/icon-close-window.svg', alt='Missing topics', style='width: 80px;')
           .admin-header-title
-            .headline.blue--text.text--darken-2.animated.fadeInLeft Feedbacks
-            .subtitle-1.grey--text.animated.fadeInLeft.wait-p2s View feedbacks
+            .headline.blue--text.text--darken-2.animated.fadeInLeft Missing Topics
+            .subtitle-1.grey--text.animated.fadeInLeft.wait-p2s View missing topics
           v-spacer
           v-btn.animated.fadeInDown.wait-p1s(icon, color='grey', outlined, @click='refresh')
             v-icon.grey--text mdi-refresh
@@ -17,7 +17,7 @@
               flat
               v-model='search'
               prepend-inner-icon='mdi-file-search-outline'
-              label='Search Feedbacks...'
+              label='Search Conversations...'
               hide-details
               dense
               style='max-width: 400px;'
@@ -57,7 +57,7 @@
                 td {{ props.item.feedback }}
                 td {{ props.item.createdAt | moment('calendar') }}
             template(slot='no-data')
-              v-alert.ma-3(icon='mdi-alert', :value='true', outlined) No feedbacks to display.
+              v-alert.ma-3(icon='mdi-alert', :value='true', outlined) No conversations to display.
           .text-center.py-2.animated.fadeInDown(v-if='this.pageTotal > 1')
             v-pagination(v-model='pagination', :length='pageTotal')
 </template>
@@ -69,17 +69,17 @@ import conversationContentQuery from 'gql/admin/ai-conversation/conversation-con
 export default {
   data() {
     return {
-      selectedFeedback: {},
+      selectedConversation: {},
       pagination: 1,
       conversationContent: [],
       pageTotal: 0,
       headers: [
-        { text: 'Conversation ID', value: 'conversationId' },
-        { text: 'Question', value: 'question' },
-        { text: 'Answer', value: 'answer' },
-        { text: 'Score', value: 'score' },
-        { text: 'Feedback', value: 'Feedback' },
-        { text: 'Created At', value: 'createdAt' }
+        { text: 'Conversation', value: 'conversationId', width: 125 },
+        { text: 'Question', value: 'question', width: 200 },
+        { text: 'Answer', value: 'answer', width: 300 },
+        { text: 'Score', value: 'score', width: 85 },
+        { text: 'Feedback', value: 'Feedback', width: 200 },
+        { text: 'Created At', value: 'createdAt', width: 110 }
       ],
       search: '',
       selectedScore: 'all',
@@ -109,7 +109,7 @@ export default {
     async refresh() {
       await this.$apollo.queries.pages.refetch()
       this.$store.commit('showNotification', {
-        message: 'Feedback list has been refreshed.',
+        message: 'Conversation list has been refreshed.',
         style: 'success',
         icon: 'cached'
       })
