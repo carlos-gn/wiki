@@ -205,18 +205,10 @@ export default {
       return _.intersection(this.permissions, ['manage:system', 'write:users', 'manage:users', 'write:groups', 'manage:groups', 'manage:navigation', 'manage:theme', 'manage:api']).length > 0
     },
     hasReadSourcePermission() {
-      if (this.isAdmin) {
-        return true;
-      }
-
-      return get('page/effectivePermissions@source.read');
+      return this.isAdmin ||  get('page/effectivePermissions@source.read');
     },
     hasReadHistoryPermission() {
-      if (this.isAdmin) {
-        return true;
-      }
-
-      return get('page/effectivePermissions@history.read');
+      return this.isAdmin || get('page/effectivePermissions@history.read');
 
     }
   },

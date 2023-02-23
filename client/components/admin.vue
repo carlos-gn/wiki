@@ -135,8 +135,8 @@ import _ from 'lodash'
 import VueRouter from 'vue-router'
 import { get, sync } from 'vuex-pathify'
 
-import statsQuery from '../graph/admin/dashboard/dashboard-query-stats.gql'
-import pubStatsQuery from '../graph/admin/dashboard/publisher-dashboard-stats.gql';
+import statsQuery from 'gql/admin/dashboard/dashboard-query-stats.gql'
+import pubStatsQuery from 'gql/admin/dashboard/publisher-dashboard-stats.gql';
 
 import adminStore from '../store/admin'
 
