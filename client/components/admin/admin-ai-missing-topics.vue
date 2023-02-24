@@ -56,6 +56,9 @@
                 td {{ props.item.score }}
                 td {{ props.item.feedback }}
                 td {{ props.item.createdAt | moment('calendar') }}
+                td.d-flex
+                  v-btn(icon, :href='`/e/en/${props.item.question}`' :aria-label='`New page`'): v-icon mdi-text-box-plus-outline
+                  v-btn(icon, :aria-label='`Not relevant`'): v-icon(color='error') mdi-cancel
             template(slot='no-data')
               v-alert.ma-3(icon='mdi-alert', :value='true', outlined) No conversations to display.
           .text-center.py-2.animated.fadeInDown(v-if='this.pageTotal > 1')
@@ -79,7 +82,8 @@ export default {
         { text: 'Answer', value: 'answer', width: 300 },
         { text: 'Score', value: 'score', width: 85 },
         { text: 'Feedback', value: 'Feedback', width: 200 },
-        { text: 'Created At', value: 'createdAt', width: 110 }
+        { text: 'Created At', value: 'createdAt', width: 110 },
+        { text: 'Actions', value: false, width: 100 },
       ],
       search: '',
       selectedScore: 'all',
