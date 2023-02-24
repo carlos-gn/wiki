@@ -16,6 +16,12 @@ type ConversationContentQuery {
     orderBy: ConversationContentOrderBy
     orderByDirection: ConversationContentOrderByDirection
   ): [ConversationContentListItem!]! @auth(requires: ["manage:system"])
+
+  listByAnswer(
+    answer: String!,
+    orderBy: ConversationContentOrderBy
+    orderByDirection: ConversationContentOrderByDirection
+  ): [ConversationContentListItem!]! @auth(requires: ["manage:system"])
 }
 
 # -----------------------------------------------
@@ -39,7 +45,7 @@ type ConversationContentQuery {
 
 type ConversationContentListItem {
  id: Int!
- conversation_id:Int!   
+ conversation_id:Int!
  question: String!
  answer:String!
  score: Int

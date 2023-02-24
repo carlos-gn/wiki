@@ -64,7 +64,7 @@
 
 <script>
 import _ from 'lodash'
-import conversationContentQuery from 'gql/admin/ai-conversation/conversation-content-query-list.gql'
+import conversationByAnswerQuery from 'gql/admin/ai-conversation/conversation-by-answer.gql'
 
 export default {
   data() {
@@ -117,9 +117,12 @@ export default {
   },
   apollo: {
     conversationContent: {
-      query: conversationContentQuery,
+      query: conversationByAnswerQuery,
       fetchPolicy: 'network-only',
-      update: (data) => data.conversationContent.list,
+      variables: {
+        answer: `I don't know`
+      },
+      update: (data) => data.conversationContent.listByAnswer,
       watchLoading (isLoading) {
         this.loading = isLoading
         this.$store.commit(`loading${isLoading ? 'Start' : 'Stop'}`, 'admin-pages-refresh')
