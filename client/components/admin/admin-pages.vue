@@ -166,4 +166,16 @@ export default {
   align-items: center;
   font-family: 'Roboto Mono', monospace;
 }
+
+.v-data-table__wrapper>table{
+  border-collapse: collapse;
+}
+
+.v-data-table__wrapper>table>tbody>tr:not(:last-child)>td:not(.v-data-table__mobile-row){
+    border-bottom: none !important;
+}
+
+.v-data-table__wrapper>table>tbody>tr:not(:last-child){
+    border-bottom: thin solid rgba(mc('grey', '500'), .25);
+}
 </style>
