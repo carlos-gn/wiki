@@ -13,7 +13,7 @@
       :right='$vuetify.rtl'
       )
       vue-scroll(:ops='scrollStyle')
-        nav-sidebar(:color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-5`', :items='sidebarDecoded', :nav-mode='navMode')
+        nav-sidebar(:color='$vuetify.theme.dark ? `grey darken-4-d4` : `grey lighten-5`', :items='sidebarDecoded', :nav-mode='navMode', ref="sidebar" )
 
     v-fab-transition(v-if='navMode !== `NONE`')
       v-btn(
@@ -41,8 +41,8 @@
             divider='/'
             )
             template(slot='item', slot-scope='props')
-              v-icon(v-if='props.item.path === "/"', small) mdi-home
-              p.ma-0.px-2(v-else, small, text) {{props.item.name}}
+              v-icon(v-if='props.item.path === "/"', small, @click='handleBreadcrumbClick(props.item.path)') mdi-home
+              v-btn.ma-0(v-else, @click='handleBreadcrumbClick(props.item.path)', :disabled='props.item.isArticle', small, text) {{props.item.name}}
           template(v-if='!isPublished')
             v-spacer
             .caption.red--text {{$t('common:page.unpublished')}}
@@ -366,6 +366,7 @@ import { get, sync } from 'vuex-pathify'
 import _ from 'lodash'
 import ClipboardJS from 'clipboard'
 import Vue from 'vue'
+import gql from 'graphql-tag'
 
 Vue.component('Tabset', Tabset)
 
@@ -537,10 +538,12 @@ export default {
       }
     },
     breadcrumbs() {
-      return [{ path: '/', name: 'Home' }].concat(_.reduce(this.path.split('/'), (result, value, key) => {
+      const pathParts = this.path.split('/')
+      return [{ path: '/', name: 'Home' }].concat(_.reduce(pathParts, (result, value, key) => {
         result.push({
           path: _.get(_.last(result), 'path', `/${this.locale}`) + `/${value}`,
-          name: value
+          name: value,
+          isArticle: key === pathParts.length - 1
         })
         return result
       }, []))
@@ -648,6 +651,39 @@ export default {
     })
   },
   methods: {
+    async handleBreadcrumbClick(itemPath) {
+      const locale = itemPath.substring(1, 3)
+      const path = itemPath.substring(4)
+
+      const resp = await this.$apollo.query({
+        query: gql`
+          query ($path: String, $locale: String!) {
+            pages {
+              tree(path: $path, mode: ALL, locale: $locale, includeAncestors: true) {
+                id
+                path
+                title
+                isFolder
+                pageId
+                parent
+                locale             
+              }
+            }
+          }
+        `,
+        fetchPolicy: 'cache-first',
+        variables: {
+          path,
+          locale
+        }
+      })
+      const items = _.get(resp, 'data.pages.tree', [])
+      const item = items.find((item) => item.path === path) || {id: 0, title: '/ (root)'}
+      const curPage = this.$store.get('page/id')
+
+      if (item.pageId === curPage) return
+      this.$refs.sidebar.fetchBrowseItems(item)
+    },
     toggleNavigation () {
       this.navOpen = !this.navOpen
     },
@@ -708,12 +744,10 @@ export default {
 <style lang="scss">
 
 .breadcrumbs-nav {
-  p {
-    text-transform: capitalize;
-    font-size: 12px;
+  .v-btn {
     min-width: 0;
     &__content {
-      text-transform: none;
+      text-transform: capitalize;
     }
   }
   .v-breadcrumbs__divider:nth-child(2n) {
