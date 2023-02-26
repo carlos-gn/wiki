@@ -36,13 +36,13 @@
           //- v-btn.pl-0(v-if='$vuetify.breakpoint.xsOnly', flat, @click='toggleNavigation')
           //-   v-icon(color='grey darken-2', left) menu
           //-   span Navigation
-          v-breadcrumbs.breadcrumbs-nav.pl-0(
+          v-breadcrumbs.breadcrumbs-nav.pa-0(
             :items='breadcrumbs'
             divider='/'
             )
             template(slot='item', slot-scope='props')
-              v-icon(v-if='props.item.path === "/"', small, @click='goHome') mdi-home
-              v-btn.ma-0(v-else, :href='props.item.path', small, text) {{props.item.name}}
+              v-icon(v-if='props.item.path === "/"', small) mdi-home
+              p.ma-0.px-2(v-else, small, text) {{props.item.name}}
           template(v-if='!isPublished')
             v-spacer
             .caption.red--text {{$t('common:page.unpublished')}}
@@ -648,9 +648,6 @@ export default {
     })
   },
   methods: {
-    goHome () {
-      window.location.assign('/')
-    },
     toggleNavigation () {
       this.navOpen = !this.navOpen
     },
@@ -711,7 +708,9 @@ export default {
 <style lang="scss">
 
 .breadcrumbs-nav {
-  .v-btn {
+  p {
+    text-transform: capitalize;
+    font-size: 12px;
     min-width: 0;
     &__content {
       text-transform: none;

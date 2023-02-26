@@ -340,7 +340,7 @@ export default {
         this.hasDeletePagesPermission || this.hasReadSourcePermission || this.hasReadHistoryPermission
     },
     hasAdministrationAccess() {
-      return this.isAuthenticated && (this.isAdmin || this.hasPublishPermission);
+      return this.isAuthenticated && (this.isAdmin || this.hasPublishPermission)
     }
 
   },
