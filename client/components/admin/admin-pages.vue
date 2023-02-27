@@ -72,6 +72,8 @@
                 td.admin-pages-path
                   v-chip(label, small, :color='$vuetify.theme.dark ? `grey darken-4` : `grey lighten-4`') {{ props.item.locale }}
                   span.ml-2.grey--text(:class='$vuetify.theme.dark ? `text--lighten-1` : `text--darken-2`') / {{ props.item.path }}
+                td
+                  page-status(:is-published="props.item.isPublished" :show-text='true' )
                 td {{ props.item.createdAt | moment('calendar') }}
                 td {{ props.item.updatedAt | moment('calendar') }}
             template(slot='no-data')
@@ -83,8 +85,13 @@
 <script>
 import _ from 'lodash'
 import pagesQuery from 'gql/admin/pages/pages-query-list.gql'
+import {StatusIndicator} from "vue-status-indicator";
 
 export default {
+  components: {
+    StatusIndicator,
+    PageStatus: () => import('../common/page-status.vue'),
+  },
   data() {
     return {
       selectedPage: {},
@@ -95,8 +102,9 @@ export default {
         { text: 'ID', value: 'id', width: 80, sortable: true },
         { text: 'Title', value: 'title' },
         { text: 'Path', value: 'path' },
+        { text: 'Publishing Status', value: 'isPublished', width: 200 },
         { text: 'Created', value: 'createdAt', width: 250 },
-        { text: 'Last Updated', value: 'updatedAt', width: 250 }
+        { text: 'Last Updated', value: 'updatedAt', width: 250 },
       ],
       search: '',
       selectedLang: null,
