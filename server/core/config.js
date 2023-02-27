@@ -83,6 +83,7 @@ module.exports = {
   async loadFromDb() {
     let conf = await WIKI.models.settings.getConfig()
     if (conf) {
+      WIKI.config.setup = false
       WIKI.config = _.defaultsDeep(conf, WIKI.config)
     } else {
       WIKI.logger.warn('DB Configuration is empty or incomplete. Switching to Setup mode...')
