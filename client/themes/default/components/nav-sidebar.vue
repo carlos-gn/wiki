@@ -165,7 +165,6 @@ export default {
                 parent
                 locale
                 isPublished
-                isPublished
               }
             }
           }
