@@ -6,6 +6,10 @@ extend type Query {
   conversationContent: ConversationContentQuery
 }
 
+extend type Mutation {
+  conversationContent: ConversationContentMutation
+}
+
 # -----------------------------------------------
 # QUERIES
 # -----------------------------------------------
@@ -19,10 +23,23 @@ type ConversationContentQuery {
 
   listByAnswer(
     answer: String!,
+    reviewed: Boolean,
     orderBy: ConversationContentOrderBy
     orderByDirection: ConversationContentOrderByDirection
   ): [ConversationContentListItem!]! @auth(requires: ["manage:system"])
 }
+
+# -----------------------------------------------
+# MUTATIONS
+# -----------------------------------------------
+
+type ConversationContentMutation {
+  changeReviewed(
+    id: Int!,
+    reviewed: Boolean!
+  ): ConversationContentListItem! @auth(requires: ["manage:system"])
+}
+
 
 # -----------------------------------------------
 # TYPES
@@ -50,6 +67,7 @@ type ConversationContentListItem {
  answer:String!
  score: Int
  feedback: String
+ reviewed: Boolean
  created_at: Date!
 }
 

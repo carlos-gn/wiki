@@ -1,6 +1,6 @@
-query($answer: String!) {
+mutation ($id: Int!, $reviewed: Boolean!) {
   conversationContent {
-    listByAnswer(answer: $answer, reviewed: false) {
+    changeReviewed(id: $id, reviewed: $reviewed) {
       id
       conversationId: conversation_id
       question
