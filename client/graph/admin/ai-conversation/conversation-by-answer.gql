@@ -1,0 +1,13 @@
+query($answer: String!) {
+  conversationContent {
+    listByAnswer(answer: $answer, reviewed: false) {
+      id
+      conversationId: conversation_id
+      question
+      answer
+      score
+      feedback
+      createdAt: created_at
+    }
+  }
+}

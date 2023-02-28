@@ -56,15 +56,42 @@
                 td {{ props.item.score }}
                 td {{ props.item.feedback }}
                 td {{ props.item.createdAt | moment('calendar') }}
+                td
+                  v-menu
+                    template(v-slot:activator="{ on, attrs }")
+                      v-btn(v-bind="attrs", v-on="on", icon, type="text"): v-icon mdi-dots-horizontal
+                    v-list
+                      v-list-item(:href="'/e/en/new-page'",  :aria-label='`New page`')
+                        v-list-item-avatar.mr-0
+                          v-icon mdi-text-box-plus-outline
+                        v-list-item-content
+                          v-list-item-title {{'New page'}}
+                      v-list-item( :aria-label='`Not relevant`', @click="showConfirmationPopup(props.item.id)")
+                        v-list-item-avatar.mr-0
+                          v-icon(color='error') mdi-cancel
+                        v-list-item-content
+                          v-list-item-title {{'Not relevant'}}
+
             template(slot='no-data')
               v-alert.ma-3(icon='mdi-alert', :value='true', outlined) No conversations to display.
           .text-center.py-2.animated.fadeInDown(v-if='this.pageTotal > 1')
             v-pagination(v-model='pagination', :length='pageTotal')
+      v-row(justify="center")
+        v-dialog(v-model="showPopup", persistent, max-width="480" )
+          v-card
+            v-card-title(class="text-h5") {{'Are you sure that you want to mark this topic as not relevant?'}}
+            v-card-text {{'This action cannot be undone'}}
+            v-card-actions
+              v-spacer
+              v-btn(text @click="closeConfirmationPopup") {{'Cancel'}}
+              v-btn(text color="primary" @click="confirmMarking") {{'Confirm'}}
+
 </template>
 
 <script>
 import _ from 'lodash'
-import conversationContentQuery from 'gql/admin/ai-conversation/conversation-content-query-list.gql'
+import conversationByAnswerQuery from 'gql/admin/ai-conversation/conversation-by-answer.gql'
+import markAsReviewedMutation from 'gql/admin/ai-conversation/conversation-mutation-mark-as-reviewed.gql'
 
 export default {
   data() {
@@ -79,7 +106,8 @@ export default {
         { text: 'Answer', value: 'answer', width: 300 },
         { text: 'Score', value: 'score', width: 85 },
         { text: 'Feedback', value: 'Feedback', width: 200 },
-        { text: 'Created At', value: 'createdAt', width: 110 }
+        { text: 'Created At', value: 'createdAt', width: 110 },
+        { text: 'Actions', value: false, width: 100 },
       ],
       search: '',
       selectedScore: 'all',
@@ -91,7 +119,8 @@ export default {
         { text: '1', value: 1 },
         { text: 'Not rated', value: null }
       ],
-      loading: false
+      loading: false,
+      chosenTopicId: null,
     }
   },
   computed: {
@@ -103,23 +132,65 @@ export default {
 
         return true
       })
+    },
+    showPopup() {
+      return Boolean(this.chosenTopicId);
     }
   },
   methods: {
     async refresh() {
-      await this.$apollo.queries.pages.refetch()
+      await this.$apollo.queries.conversationContent.refetch()
       this.$store.commit('showNotification', {
         message: 'Conversation list has been refreshed.',
         style: 'success',
         icon: 'cached'
       })
+    },
+    async markTopicAsReviewed(id) {
+      return await this.$apollo.mutate({
+        mutation: markAsReviewedMutation,
+        variables: {
+          id,
+          reviewed: true
+        }
+      })
+    },
+    closeConfirmationPopup() {
+      this.chosenTopicId = null;
+    },
+    showConfirmationPopup(id) {
+      this.chosenTopicId = id;
+    },
+    async confirmMarking() {
+      try {
+        this.$store.commit(`loadingStart`, 'admin-pages-refresh')
+
+        const topic = await this.markTopicAsReviewed(this.chosenTopicId);
+        const topicId = topic.data.conversationContent.changeReviewed.id;
+
+        this.conversationContent = this.conversationContent.filter(content => content.id !== topicId);
+
+        this.$store.commit('showNotification', {
+          message: 'Action completed.',
+          style: 'success',
+          icon: 'check'
+        })
+      } catch (e) {
+        console.error(e.message);
+      } finally {
+        this.$store.commit(`loadingStop`, 'admin-pages-refresh')
+        this.closeConfirmationPopup();
+      }
     }
   },
   apollo: {
     conversationContent: {
-      query: conversationContentQuery,
+      query: conversationByAnswerQuery,
       fetchPolicy: 'network-only',
-      update: (data) => data.conversationContent.list,
+      variables: {
+        answer: `I don't know`
+      },
+      update: (data) => data.conversationContent.listByAnswer,
       watchLoading (isLoading) {
         this.loading = isLoading
         this.$store.commit(`loading${isLoading ? 'Start' : 'Stop'}`, 'admin-pages-refresh')

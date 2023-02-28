@@ -1,0 +1,13 @@
+mutation ($id: Int!, $reviewed: Boolean!) {
+  conversationContent {
+    changeReviewed(id: $id, reviewed: $reviewed) {
+      id
+      conversationId: conversation_id
+      question
+      answer
+      score
+      feedback
+      createdAt: created_at
+    }
+  }
+}
