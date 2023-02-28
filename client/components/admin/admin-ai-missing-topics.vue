@@ -77,7 +77,7 @@
           .text-center.py-2.animated.fadeInDown(v-if='this.pageTotal > 1')
             v-pagination(v-model='pagination', :length='pageTotal')
       v-row(justify="center")
-        v-dialog(v-model="showPopup", persistent, max-width="400" )
+        v-dialog(v-model="showPopup", persistent, max-width="480" )
           v-card
             v-card-title(class="text-h5") {{'Are you sure that you want to mark this topic as not relevant?'}}
             v-card-text {{'This action cannot be undone'}}
