@@ -77,12 +77,11 @@
             v-card-chin
               v-spacer
               v-btn(text, @click='closeConfirmationPopup', :disabled='loading') {{$t('common:actions.cancel')}}
-              v-btn(color='primary', @click='confirmTopicReview', :loading='loading').white--text {{'Confirm'}}
+              v-btn(color='primary', @click='confirmTopicReview', :loading='loading').white--text {{$t('common:actions.confirm')}}
 
 </template>
 
 <script>
-import _ from 'lodash'
 import conversationByAnswerQuery from 'gql/admin/ai-conversation/conversation-by-answer.gql'
 import markAsReviewedMutation from 'gql/admin/ai-conversation/conversation-mutation-mark-as-reviewed.gql'
 
