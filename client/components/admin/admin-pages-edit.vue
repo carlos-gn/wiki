@@ -10,12 +10,7 @@
               v-chip.ml-0.mr-2(label, small).caption ID {{page.id}}
               span /{{page.locale}}/{{page.path}}
           v-spacer
-          template(v-if='page.isPublished')
-            status-indicator.mr-3(positive, pulse)
-            .caption.green--text {{$t('common:page.published')}}
-          template(v-else)
-            status-indicator.mr-3(negative, pulse)
-            .caption.red--text {{$t('common:page.unpublished')}}
+          page-status(:show-indication='true' :is-published="page.isPublished" :show-text='true' )
           template(v-if='page.isPrivate')
             status-indicator.mr-3.ml-4(intermediary, pulse)
             .caption.deep-orange--text {{$t('common:page.private')}}
@@ -189,7 +184,8 @@ import gql from 'graphql-tag'
 
 export default {
   components: {
-    StatusIndicator
+    StatusIndicator,
+    PageStatus: () => import('../common/page-status.vue'),
   },
   data() {
     return {

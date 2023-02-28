@@ -68,17 +68,22 @@
         v-list-item(v-else, :href='`/` + item.locale + `/` + item.path', :key='`childpage-` + item.id', :input-value='path === item.path' class='navigation-list-item')
           v-list-item-avatar(size='24')
             v-icon( :class='$vuetify.theme.dark ? `white--text` : `black--text`') mdi-text-box
-          v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize') {{ getItemName(item.title) }}
+          v-list-item-content
+            v-list-item-title(:class='$vuetify.theme.dark ? `white--text` : `black--text`' style='text-transform: capitalize') {{ getItemName(item.title) }}
+          v-list-item-action(v-if="hasPermission(['manage:system', 'write:pages', 'publish:pages'])" )
+            page-status(:is-published="item.isPublished" :show-indication="false" :show-text="false")
 </template>
 
 <script>
 import _ from 'lodash'
 import gql from 'graphql-tag'
 import { get } from 'vuex-pathify'
+import PageStatus from "../../../components/common/page-status.vue";
 
 /* global siteLangs */
 
 export default {
+  components: { PageStatus },
   props: {
     color: {
       type: String,
@@ -111,7 +116,8 @@ export default {
   },
   computed: {
     path: get('page/path'),
-    locale: get('page/locale')
+    locale: get('page/locale'),
+    permissions: get('user/permissions'),
   },
   methods: {
     switchMode (mode) {
@@ -158,6 +164,7 @@ export default {
                 pageId
                 parent
                 locale
+                isPublished
               }
             }
           }
@@ -169,7 +176,7 @@ export default {
         }
       })
       this.loadedCache = _.union(this.loadedCache, [item.id])
-      this.currentItems = _.get(resp, 'data.pages.tree', [])
+      this.currentItems = _.get(resp, 'data.pages.tree', []);
       this.$store.commit(`loadingStop`, 'browse-load')
     },
     async loadFromCurrentPath() {
@@ -185,7 +192,8 @@ export default {
                 isFolder
                 pageId
                 parent
-                locale             
+                locale
+                isPublished
               }
             }
           }
@@ -227,6 +235,15 @@ export default {
     getItemName (itemTitle) {
       const parts = itemTitle.split('/')
       return parts[parts.length - 1]
+    },
+    hasPermission(prm) {
+      if (_.isArray(prm)) {
+        return _.some(prm, p => {
+          return _.includes(this.permissions, p)
+        })
+      } else {
+        return _.includes(this.permissions, prm)
+      }
     }
   },
   mounted () {

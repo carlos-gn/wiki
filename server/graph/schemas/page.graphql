@@ -294,6 +294,7 @@ type PageTreeItem {
   parent: Int
   pageId: Int
   locale: String!
+  isPublished: Boolean
 }
 
 type PageLinkItem {
