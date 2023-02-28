@@ -23,19 +23,9 @@
               style='max-width: 400px;'
               )
             v-spacer
-            v-select.ml-2(
-              solo
-              flat
-              hide-details
-              dense
-              label='Score'
-              :items='scores'
-              v-model='selectedScore'
-              style='max-width: 250px;'
-            )
           v-divider
           v-data-table(
-            :items='filteredPages'
+            :items='conversationContent'
             :headers='headers'
             :search='search'
             :page.sync='pagination'
@@ -53,8 +43,6 @@
                 td.text-xs-right {{ props.item.conversationId }}
                 td.body-2 {{ props.item.question }}
                 td {{ props.item.answer }}
-                td {{ props.item.score }}
-                td {{ props.item.feedback }}
                 td {{ props.item.createdAt | moment('calendar') }}
                 td
                   v-menu
@@ -70,33 +58,36 @@
                         v-list-item-avatar.mr-0
                           v-icon(color='error') mdi-cancel
                         v-list-item-content
-                          v-list-item-title {{'Not relevant'}}
+                          v-list-item-title {{'Dismiss'}}
 
             template(slot='no-data')
               v-alert.ma-3(icon='mdi-alert', :value='true', outlined) No conversations to display.
           .text-center.py-2.animated.fadeInDown(v-if='this.pageTotal > 1')
             v-pagination(v-model='pagination', :length='pageTotal')
       v-row(justify="center")
-        v-dialog(v-model="showPopup", persistent, max-width="480" )
+        v-dialog(v-model="showPopup", persistent, max-width="500" )
           v-card
-            v-card-title(class="text-h5") {{'Are you sure that you want to mark this topic as not relevant?'}}
-            v-card-text {{'This action cannot be undone'}}
-            v-card-actions
+            .dialog-header.is-short.isBlue
+              v-icon.mr-2(color='white')
+              span Dismiss
+            v-card-text.pt-5
+              span  Are you want to dismiss this item?
+              span.primary--text.text--darken-2
+              .caption You won't be able to revert this action
+            v-card-chin
               v-spacer
-              v-btn(text @click="closeConfirmationPopup") {{'Cancel'}}
-              v-btn(text color="primary" @click="confirmMarking") {{'Confirm'}}
+              v-btn(text, @click='closeConfirmationPopup', :disabled='loading') {{$t('common:actions.cancel')}}
+              v-btn(color='primary', @click='confirmTopicReview', :loading='loading').white--text {{$t('common:actions.confirm')}}
 
 </template>
 
 <script>
-import _ from 'lodash'
 import conversationByAnswerQuery from 'gql/admin/ai-conversation/conversation-by-answer.gql'
 import markAsReviewedMutation from 'gql/admin/ai-conversation/conversation-mutation-mark-as-reviewed.gql'
 
 export default {
   data() {
     return {
-      selectedConversation: {},
       pagination: 1,
       conversationContent: [],
       pageTotal: 0,
@@ -104,35 +95,15 @@ export default {
         { text: 'Conversation', value: 'conversationId', width: 125 },
         { text: 'Question', value: 'question', width: 200 },
         { text: 'Answer', value: 'answer', width: 300 },
-        { text: 'Score', value: 'score', width: 85 },
-        { text: 'Feedback', value: 'Feedback', width: 200 },
         { text: 'Created At', value: 'createdAt', width: 110 },
         { text: 'Actions', value: false, width: 100 },
       ],
       search: '',
-      selectedScore: 'all',
-      scores: [
-        { text: 'All Scores', value: 'all' },
-        { text: '4', value: 4 },
-        { text: '3', value: 3 },
-        { text: '2', value: 2 },
-        { text: '1', value: 1 },
-        { text: 'Not rated', value: null }
-      ],
       loading: false,
       chosenTopicId: null,
     }
   },
   computed: {
-    filteredPages () {
-      return _.filter(this.conversationContent, conversationContent => {
-        if (this.selectedScore !== 'all' && this.selectedScore !== conversationContent.score) {
-          return false
-        }
-
-        return true
-      })
-    },
     showPopup() {
       return Boolean(this.chosenTopicId);
     }
@@ -161,7 +132,7 @@ export default {
     showConfirmationPopup(id) {
       this.chosenTopicId = id;
     },
-    async confirmMarking() {
+    async confirmTopicReview() {
       try {
         this.$store.commit(`loadingStart`, 'admin-pages-refresh')
 
